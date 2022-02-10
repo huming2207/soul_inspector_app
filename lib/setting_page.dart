@@ -1,21 +1,18 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:snack/snack.dart';
 import 'package:soul_inspector_app/uart_defs.dart';
+
+import 'common_value.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({Key? key}) : super(key: key);
 
-  bool isInt(String? str) {
-    if (str == null) {
-      return false;
-    }
-
-    return int.tryParse(str) != null;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final box = GetStorage();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -43,13 +40,26 @@ class SettingPage extends StatelessWidget {
                 leading: const Icon(Icons.speed_outlined),
                 description: const Text('UART speed'),
                 onPressed: (BuildContext ctx) async {
-                  await showTextInputDialog(
+                  var result = await showTextInputDialog(
                     context: ctx,
                     textFields: [
                       const DialogTextField(keyboardType: TextInputType.number)
                     ],
                     title: 'Enter baud rate',
                   );
+
+                  if (result == null || result.isEmpty) return;
+
+                  var val = int.tryParse(result.first);
+                  if (val == null || val < 0 || val > 6000000) {
+                    const SnackBar(
+                      content: Text('Invalid baud rate!'),
+                      backgroundColor: Colors.red,
+                    ).show(ctx);
+                    return;
+                  }
+
+                  await box.write(SettingKeys.baudRate, val);
                 },
             ),
             SettingsTile(
@@ -57,7 +67,7 @@ class SettingPage extends StatelessWidget {
               leading: const Icon(Icons.straighten_outlined),
               description: const Text('Data bits per frame'),
               onPressed: (BuildContext ctx) async {
-                await showConfirmationDialog(
+                var result = await showConfirmationDialog(
                   context: ctx,
                   title: 'Select data bit',
                   actions: [
@@ -67,6 +77,9 @@ class SettingPage extends StatelessWidget {
                     const AlertDialogAction(key: 8, label: '8'),
                   ]
                 );
+
+                if (result == null || result < 5 || result > 8) return;
+                await box.write(SettingKeys.dataBits, result);
               },
             ),
             SettingsTile(
@@ -74,7 +87,7 @@ class SettingPage extends StatelessWidget {
               leading: const Icon(Icons.rule_outlined),
               description: const Text('Parity modes'),
               onPressed: (BuildContext ctx) async {
-                await showConfirmationDialog(
+                var result = await showConfirmationDialog(
                   context: ctx,
                   title: 'Select parity bit',
                   actions: [
@@ -83,6 +96,9 @@ class SettingPage extends StatelessWidget {
                     const AlertDialogAction(key: ParityMode.odd, label: 'Odd'),
                   ]
                 );
+
+                if (result == null) return;
+                await box.write(SettingKeys.parityBits, result);
               },
             ),
             SettingsTile(
@@ -90,7 +106,7 @@ class SettingPage extends StatelessWidget {
               leading: const Icon(Icons.stop_circle_outlined),
               description: const Text('Stop bit modes'),
               onPressed: (BuildContext ctx) async {
-                await showConfirmationDialog(
+                var result = await showConfirmationDialog(
                   context: ctx,
                   title: 'Select stop bits',
                   actions: [
@@ -99,6 +115,9 @@ class SettingPage extends StatelessWidget {
                     const AlertDialogAction(key: StopBits.bit20, label: '2 bits'),
                   ]
                 );
+
+                if (result == null) return;
+                await box.write(SettingKeys.stopBits, result);
               },
             ),
         ],)

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:soul_inspector_app/ble_console_backend.dart';
 import 'package:soul_inspector_app/setting_page.dart';
 import 'package:xterm/flutter.dart';
 import 'package:xterm/terminal/terminal.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
   runApp(const MyApp());
 }
 
