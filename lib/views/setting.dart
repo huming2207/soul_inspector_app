@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:snack/snack.dart';
-import 'package:soul_inspector_app/uart_defs.dart';
+import 'package:soul_inspector_app/common/uart_defs.dart';
 
-import 'common_value.dart';
+import '../common/setting_defs.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({Key? key}) : super(key: key);
