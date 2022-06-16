@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:soul_inspector_app/views/home.dart';
+import 'package:soul_inspector_app/views/main_page.dart';
 
 
 void main() async {
@@ -19,7 +19,7 @@ class SoulInspectorApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Soul Inspector',
       theme: ThemeData(primarySwatch: Colors.green),
-      home: HomePage(),
+      home: MainPage(),
     );
   }
 }
