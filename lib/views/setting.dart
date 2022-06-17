@@ -1,13 +1,16 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:snack/snack.dart';
 import 'package:soul_inspector_app/common/uart_defs.dart';
+import 'package:soul_inspector_app/controller/setting_controller.dart';
+import 'package:soul_inspector_app/views/ble_search.dart';
 
 import '../common/setting_defs.dart';
 
-class SettingPage extends StatelessWidget {
+class SettingPage extends GetView<SettingController> {
   const SettingPage({Key? key}) : super(key: key);
 
   @override
@@ -26,7 +29,7 @@ class SettingPage extends StatelessWidget {
               leading: const Icon(Icons.phonelink_ring_outlined),
               description: const Text('Connect your Soul Inspector via BLE'),
               onPressed: (BuildContext ctx) {
-
+                Get.to(() => BleSearchPage());
               },
             ),
           ],

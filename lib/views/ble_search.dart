@@ -7,7 +7,7 @@ import 'package:soul_inspector_app/controller/main_controller.dart';
 class BleSearchPage extends GetView<BleSearchController> {
   final flutterReactiveBle = FlutterReactiveBle();
   final errorSnackBar = const SnackBar(content: Text('Failed to scan device!'), backgroundColor: Colors.red);
-  var mainController = Get.find<MainController>();
+  final mainController = Get.find<MainController>();
 
   BleSearchPage({Key? key}) : super(key: key) {
     flutterReactiveBle.scanForDevices(withServices: [Uuid.parse('ab565e22-3d1a-47ed-9ff9-6ea0f7563101')], scanMode: ScanMode.lowLatency).listen((device) {
