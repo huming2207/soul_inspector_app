@@ -20,3 +20,11 @@ class BleSearchController extends GetxController {
     selectedDeviceName.value = device.name;
   }
 }
+
+class BleSearchBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut(() => BleSearchController());
+  }
+
+}
