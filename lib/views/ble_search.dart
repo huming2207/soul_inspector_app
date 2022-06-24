@@ -28,9 +28,14 @@ class BleSearchPage extends GetView<BleSearchController> {
               children: [
                 for (final device in controller.devices)
                   Builder(builder: (context) {
-                    return Card(child: ListTile(title: Text(device.name), subtitle: Text('ID: ${device.id}; RSSI: ${device.rssi}'), onTap: () {
-                      controller.setSelectedDevice(device);
-                    }));
+                    return Card(
+                        child: ListTile(
+                            title: Text(device.name),
+                            subtitle: Text('ID: ${device.id}; RSSI: ${device.rssi}'),
+                            onTap: () {
+                              controller.setSelectedDevice(device);
+                              mainController.selectedDeviceId.value = device.id;
+                            }));
                   })
               ],
             )),
