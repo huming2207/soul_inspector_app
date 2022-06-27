@@ -10,9 +10,11 @@ class BleSearchPage extends GetView<BleSearchController> {
   final mainController = Get.find<MainController>();
 
   BleSearchPage({Key? key}) : super(key: key) {
-    flutterReactiveBle.scanForDevices(withServices: [Uuid.parse('ab565e22-3d1a-47ed-9ff9-6ea0f7563101')], scanMode: ScanMode.lowLatency).listen((device) {
+    flutterReactiveBle.scanForDevices(withServices: [(Uuid.parse('6ae00001-efc9-11ec-8ea0-0242ac120002'))], scanMode: ScanMode.balanced).listen((device) {
+      print('Got device: $device');
       controller.addDevice(device);
     }).onError((error) {
+      print('Got error: $error');
       controller.hasError.value = true;
     });
   }
