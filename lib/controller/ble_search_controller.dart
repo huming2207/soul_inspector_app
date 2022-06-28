@@ -10,7 +10,12 @@ class BleSearchController extends GetxController {
 
   void addDevice(DiscoveredDevice device) {
     final deviceList = devices.toList(growable: true);
-    deviceList.add(device);
+    if (deviceList.isNotEmpty) {
+      deviceList.addAll(devices.where((a) => deviceList.every((b) => a.id != b.id)));
+    } else {
+      deviceList.add(device);
+    }
+
     devices.value = deviceList;
     update(devices);
   }
