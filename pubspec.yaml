@@ -38,7 +38,7 @@ dependencies:
   xterm: ^2.6.0
   flutter_reactive_ble: ^5.0.2
   settings_ui: ^2.0.2
-  adaptive_dialog: ^1.6.4
+  adaptive_dialog: ^1.6.4+1
   snack: ^2.0.0
   get_storage: ^2.0.3
   permission_handler: ^10.0.0
