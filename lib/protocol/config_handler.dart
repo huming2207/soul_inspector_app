@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 enum ConfigPacketOpCode {
   u32(0),
   i32Pos(1),
@@ -48,10 +51,42 @@ enum ConfigPacketOpCode {
 class ConfigNumPacket {
   late ConfigPacketOpCode opCode;
   late String key;
-  late int data;
+  late int param;
 
-  ConfigNumPacket({required this.opCode, required this.key, required this.data});
+  ConfigNumPacket({required this.opCode, required this.key, required this.param});
   ConfigNumPacket.fromBytes(List<int> bytes) {
-    opCode = ConfigPacketOpCode.fromInt(bytes[0]);
+    final data = Uint8List.fromList(bytes);
+    opCode = ConfigPacketOpCode.fromInt(data[0]);
+    final keyBytes = data.sublist(1, 17);
+    key = ascii.decode(keyBytes);
+    param = ByteData.sublistView(data).getUint32(17, Endian.little);
+  }
+}
+
+class ConfigKeyPacket {
+  late ConfigPacketOpCode opCode;
+  late String key;
+
+  ConfigKeyPacket({required this.opCode, required this.key});
+  ConfigKeyPacket.fromBytes(List<int> bytes) {
+    final data = Uint8List.fromList(bytes);
+    opCode = ConfigPacketOpCode.fromInt(data[0]);
+    final keyBytes = data.sublist(1, 17);
+    key = ascii.decode(keyBytes);
+  }
+}
+
+class ConfigBlobPacket {
+  late ConfigPacketOpCode opCode;
+  late String key;
+  late Uint8List param;
+
+  ConfigBlobPacket({required this.opCode, required this.key, required this.param});
+  ConfigBlobPacket.fromBytes(List<int> bytes) {
+    final data = Uint8List.fromList(bytes);
+    opCode = ConfigPacketOpCode.fromInt(data[0]);
+    final keyBytes = data.sublist(1, 17);
+    key = ascii.decode(keyBytes);
+    param = data.sublist(19, data[18]);
   }
 }
