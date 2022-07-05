@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:soul_inspector_app/protocol/protocol_exceptions.dart';
+
 enum ConfigPacketOpCode {
   u32(0),
   i32Pos(1),
@@ -48,6 +50,9 @@ enum ConfigPacketOpCode {
   final int value;
 }
 
+Uint8List uInt32ToLEBytes(int value) =>
+    Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.little);
+
 class ConfigNumPacket {
   late ConfigPacketOpCode opCode;
   late String key;
@@ -55,11 +60,24 @@ class ConfigNumPacket {
 
   ConfigNumPacket({required this.opCode, required this.key, required this.param});
   ConfigNumPacket.fromBytes(List<int> bytes) {
+    if (bytes.length < 21) {
+      throw InvalidPacketLengthException('Length too short: ${bytes.length}');
+    }
+
     final data = Uint8List.fromList(bytes);
     opCode = ConfigPacketOpCode.fromInt(data[0]);
     final keyBytes = data.sublist(1, 17);
     key = ascii.decode(keyBytes);
     param = ByteData.sublistView(data).getUint32(17, Endian.little);
+  }
+
+  Uint8List toBytes() {
+    final bytes = BytesBuilder();
+    bytes.addByte(opCode.value & 0xff);
+    bytes.add(ascii.encode(key.substring(0, 16)));
+    bytes.add(uInt32ToLEBytes(param));
+
+    return bytes.toBytes();
   }
 }
 
@@ -69,10 +87,22 @@ class ConfigKeyPacket {
 
   ConfigKeyPacket({required this.opCode, required this.key});
   ConfigKeyPacket.fromBytes(List<int> bytes) {
+    if (bytes.length < 17) {
+      throw InvalidPacketLengthException('Length too short: ${bytes.length}');
+    }
+
     final data = Uint8List.fromList(bytes);
     opCode = ConfigPacketOpCode.fromInt(data[0]);
     final keyBytes = data.sublist(1, 17);
     key = ascii.decode(keyBytes);
+  }
+
+  Uint8List toBytes() {
+    final bytes = BytesBuilder();
+    bytes.addByte(opCode.value & 0xff);
+    bytes.add(ascii.encode(key.substring(0, 16)));
+
+    return bytes.toBytes();
   }
 }
 
@@ -83,10 +113,23 @@ class ConfigBlobPacket {
 
   ConfigBlobPacket({required this.opCode, required this.key, required this.param});
   ConfigBlobPacket.fromBytes(List<int> bytes) {
+    if (bytes.length < 17) {
+      throw InvalidPacketLengthException('Length too short: ${bytes.length}');
+    }
+
     final data = Uint8List.fromList(bytes);
     opCode = ConfigPacketOpCode.fromInt(data[0]);
     final keyBytes = data.sublist(1, 17);
     key = ascii.decode(keyBytes);
     param = data.sublist(19, data[18]);
+  }
+
+  Uint8List toBytes() {
+    final bytes = BytesBuilder();
+    bytes.addByte(opCode.value & 0xff);
+    bytes.add(ascii.encode(key.substring(0, 16)));
+    bytes.add(param);
+
+    return bytes.toBytes();
   }
 }
