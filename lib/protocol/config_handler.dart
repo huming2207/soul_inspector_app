@@ -50,11 +50,23 @@ enum ConfigPacketOpCode {
   final int value;
 }
 
-Uint8List uInt32ToLEBytes(int value) =>
-    Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.little);
-
-class ConfigNumPacket {
+abstract class ConfigPacket {
   late ConfigPacketOpCode opCode;
+  late String key;
+
+  Uint8List toBytes();
+  static Uint8List uint32ToLEBytes(int value) =>
+      Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.little);
+}
+
+
+
+
+class ConfigNumPacket implements ConfigPacket {
+  @override
+  late ConfigPacketOpCode opCode;
+
+  @override
   late String key;
   late int param;
 
@@ -71,18 +83,23 @@ class ConfigNumPacket {
     param = ByteData.sublistView(data).getUint32(17, Endian.little);
   }
 
+  @override
   Uint8List toBytes() {
     final bytes = BytesBuilder();
     bytes.addByte(opCode.value & 0xff);
     bytes.add(ascii.encode(key.substring(0, 16)));
-    bytes.add(uInt32ToLEBytes(param));
+    bytes.add(ConfigPacket.uint32ToLEBytes(param));
 
     return bytes.toBytes();
   }
 }
 
-class ConfigKeyPacket {
+
+class ConfigKeyPacket implements ConfigPacket {
+  @override
   late ConfigPacketOpCode opCode;
+
+  @override
   late String key;
 
   ConfigKeyPacket({required this.opCode, required this.key});
@@ -97,6 +114,7 @@ class ConfigKeyPacket {
     key = ascii.decode(keyBytes);
   }
 
+  @override
   Uint8List toBytes() {
     final bytes = BytesBuilder();
     bytes.addByte(opCode.value & 0xff);
@@ -106,8 +124,11 @@ class ConfigKeyPacket {
   }
 }
 
-class ConfigBlobPacket {
+class ConfigBlobPacket implements ConfigPacket {
+  @override
   late ConfigPacketOpCode opCode;
+
+  @override
   late String key;
   late Uint8List param;
 
@@ -124,6 +145,7 @@ class ConfigBlobPacket {
     param = data.sublist(19, data[18]);
   }
 
+  @override
   Uint8List toBytes() {
     final bytes = BytesBuilder();
     bytes.addByte(opCode.value & 0xff);
