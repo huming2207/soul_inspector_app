@@ -85,7 +85,7 @@ class ConfigNumPacket implements ConfigPacket {
     final bytes = BytesBuilder();
     bytes.addByte(opCode.value & 0xff);
     bytes.add(ascii.encode(key.substring(0, 16)));
-    bytes.add(ConfigPacket.uint32ToLEBytes(param));
+    bytes.add(ConfigPacket.uint32ToLEBytes(param.abs()));
 
     return bytes.toBytes();
   }
