@@ -59,9 +59,6 @@ abstract class ConfigPacket {
       Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.little);
 }
 
-
-
-
 class ConfigNumPacket implements ConfigPacket {
   @override
   late ConfigPacketOpCode opCode;
@@ -93,7 +90,6 @@ class ConfigNumPacket implements ConfigPacket {
     return bytes.toBytes();
   }
 }
-
 
 class ConfigKeyPacket implements ConfigPacket {
   @override
