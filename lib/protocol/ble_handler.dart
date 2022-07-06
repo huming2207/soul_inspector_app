@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 class BleHandler {
-  static Future<List<int>> writeAndGetNotify(Uuid characteristicId, Uuid serviceId, String deviceId, List<int> value) async {
+  static Future<List<int>> writeAndGetNotify(Uuid characteristicId, Uuid serviceId, String deviceId, Uint8List value) async {
     final ble = FlutterReactiveBle();
     final characteristic = QualifiedCharacteristic(characteristicId: characteristicId, serviceId: serviceId, deviceId: deviceId);
     await ble.writeCharacteristicWithResponse(characteristic, value: value);
