@@ -5,8 +5,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:snack/snack.dart';
 import 'package:soul_inspector_app/controller/setting_controller.dart';
-import 'package:soul_inspector_app/views/ble_search.dart';
-
 import '../common/setting_defs.dart';
 
 class SettingPage extends GetView<SettingController> {
@@ -21,19 +19,6 @@ class SettingPage extends GetView<SettingController> {
         ),
         body: SettingsList(
           sections: [
-            SettingsSection(
-              title: const Text('Soul Inspector Device'),
-              tiles: <SettingsTile>[
-                SettingsTile.navigation(
-                  title: const Text('Device connection'),
-                  leading: const Icon(Icons.phonelink_ring_outlined),
-                  description: const Text('Connect your Soul Inspector via BLE'),
-                  onPressed: (BuildContext ctx) {
-                    Get.to(() => BleSearchPage());
-                  },
-                ),
-              ],
-            ),
             SettingsSection(
               title: const Text('Serial Port'),
               tiles: <SettingsTile>[
