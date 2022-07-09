@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:soul_inspector_app/common/characteristic_uuids.dart';
+
+import '../protocol/ble_handler.dart';
 
 class BleController extends GetxController {
   final String title = 'Device Search & Selection';
@@ -48,6 +52,19 @@ class BleController extends GetxController {
 
     selectedDeviceId.value = device.id;
     selectedDeviceName.value = device.name;
+  }
+
+  Future<int> setTime() async {
+    final ts = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final value = [(ts & 0xff), (ts >> 8) & 0xff, (ts >> 16) & 0xff, (ts >> 24) & 0xff];
+    final result = await BleHandler.writeAndGetNotify(
+        CharacteristicUuids.timeSync,
+        CharacteristicUuids.service,
+        selectedDeviceId.value,
+        Uint8List.fromList(value)
+    );
+
+    return ByteData.sublistView(Uint8List.fromList(result)).getUint64(0, Endian.little);
   }
 }
 
