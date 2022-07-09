@@ -57,6 +57,20 @@ abstract class ConfigPacket {
   Uint8List toBytes();
   static Uint8List uint32ToLEBytes(int value) =>
       Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.little);
+
+  static Uint8List stringToPaddedList(String str, int byteCount) {
+    final asciiBytes = ascii.encode(str);
+    if (asciiBytes.length >= byteCount) {
+      final list = Uint8List.fromList(asciiBytes.sublist(0, byteCount - 1));
+      list.add(0); // Make the last item is '\0'
+      return list;
+    } else {
+      final list = Uint8List.fromList(asciiBytes);
+      list.addAll(Uint8List(byteCount - asciiBytes.length - 1));
+      list.add(0); // Make the last item is '\0'
+      return list;
+    }
+  }
 }
 
 class ConfigNumPacket implements ConfigPacket {
@@ -84,7 +98,7 @@ class ConfigNumPacket implements ConfigPacket {
   Uint8List toBytes() {
     final bytes = BytesBuilder();
     bytes.addByte(opCode.value & 0xff);
-    bytes.add(ascii.encode(key.substring(0, 16)));
+    bytes.add(ConfigPacket.stringToPaddedList(key, 16));
     bytes.add(ConfigPacket.uint32ToLEBytes(param.abs()));
 
     return bytes.toBytes();
@@ -114,7 +128,7 @@ class ConfigKeyPacket implements ConfigPacket {
   Uint8List toBytes() {
     final bytes = BytesBuilder();
     bytes.addByte(opCode.value & 0xff);
-    bytes.add(ascii.encode(key.substring(0, 16)));
+    bytes.add(ConfigPacket.stringToPaddedList(key, 16));
 
     return bytes.toBytes();
   }
