@@ -7,7 +7,9 @@ class DevInfoPacket {
   String sdkVer = '';
   String devModel = '';
   String devFirmwareVer = '';
-  
+
+  DevInfoPacket.dummy();
+
   DevInfoPacket(Uint8List bytes) {
     macAddr = bytes.sublist(0, 6);
     flashId = bytes.sublist(6, 14);

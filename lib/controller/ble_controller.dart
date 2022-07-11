@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:soul_inspector_app/common/characteristic_uuids.dart';
 
+import '../model/dev_info_packet.dart';
 import '../protocol/ble_handler.dart';
 
 class BleController extends GetxController {
@@ -16,6 +18,7 @@ class BleController extends GetxController {
   var selectedDeviceMtu = 20.obs;
   var hasError = false.obs;
   var connectState = DeviceConnectionState.disconnected.obs;
+  var devInfo = DevInfoPacket.dummy().obs;
 
   void addDevice(DiscoveredDevice device) {
     final deviceList = devices.toList(growable: true);
@@ -33,8 +36,7 @@ class BleController extends GetxController {
     devices.value = [];
     update(devices);
   }
-
-
+  
   void setSelectedDevice(DiscoveredDevice device) {
     ble.connectToAdvertisingDevice(
         id: device.id,
@@ -45,13 +47,15 @@ class BleController extends GetxController {
       if (event.connectionState == DeviceConnectionState.connected) {
         selectedDeviceMtu.value = await ble.requestMtu(deviceId: device.id, mtu: 260);
         await ble.requestConnectionPriority(deviceId: device.id, priority: ConnectionPriority.highPerformance);
+        devInfo.value = DevInfoPacket(await BleHandler.read(CharacteristicUuids.devInfo, CharacteristicUuids.service, device.id));
+        selectedDeviceId.value = device.id;
+        selectedDeviceName.value = device.name;
+
+        Fluttertoast.showToast(msg: 'Connected to ${hex.encode(devInfo.value.macAddr)}; FW ${devInfo.value.devFirmwareVer}');
       }
     }, onError: (dynamic error) {
       Fluttertoast.showToast(msg: 'Error on Bluetooth connection: $error', toastLength: Toast.LENGTH_LONG);
     });
-
-    selectedDeviceId.value = device.id;
-    selectedDeviceName.value = device.name;
   }
 
   Future<int> setTime() async {
@@ -73,5 +77,4 @@ class BleSearchBinding extends Bindings {
   void dependencies() {
     Get.lazyPut(() => BleController());
   }
-
 }
