@@ -4,11 +4,14 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:snack/snack.dart';
+import 'package:soul_inspector_app/controller/ble_controller.dart';
 import 'package:soul_inspector_app/controller/setting_controller.dart';
+import 'package:soul_inspector_app/protocol/ble_handler.dart';
 import '../common/setting_defs.dart';
 
 class SettingPage extends GetView<SettingController> {
-  const SettingPage({Key? key}) : super(key: key);
+  SettingPage({Key? key}) : super(key: key);
+  final bleController = Get.find<BleController>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +48,7 @@ class SettingPage extends GetView<SettingController> {
                       return;
                     }
 
+                    await BleHandler.writeBaudRate(val, bleController.selectedDeviceId.value);
                     await box.write(SettingKeys.baudRate, val);
                   },
                 ),
@@ -60,7 +64,8 @@ class SettingPage extends GetView<SettingController> {
                       const AlertDialogAction(key: 3, label: '8'),
                     ]);
 
-                    if (result == null || result < 5 || result > 8) return;
+                    if (result == null) return;
+                    await BleHandler.writeDataBits(result, bleController.selectedDeviceId.value);
                     await box.write(SettingKeys.dataBits, result);
                   },
                 ),
@@ -76,6 +81,7 @@ class SettingPage extends GetView<SettingController> {
                     ]);
 
                     if (result == null) return;
+                    await BleHandler.writeParity(result, bleController.selectedDeviceId.value);
                     await box.write(SettingKeys.parityBits, result);
                   },
                 ),
@@ -91,6 +97,7 @@ class SettingPage extends GetView<SettingController> {
                     ]);
 
                     if (result == null) return;
+                    await BleHandler.writeStopBit(result, bleController.selectedDeviceId.value);
                     await box.write(SettingKeys.stopBits, result);
                   },
                 ),
