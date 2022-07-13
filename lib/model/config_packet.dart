@@ -60,16 +60,17 @@ abstract class ConfigPacket {
 
   static Uint8List stringToPaddedList(String str, int byteCount) {
     final asciiBytes = ascii.encode(str);
+    final bytes = BytesBuilder();
     if (asciiBytes.length >= byteCount) {
-      final list = Uint8List.fromList(asciiBytes.sublist(0, byteCount - 1));
-      list.add(0); // Make the last item is '\0'
-      return list;
+      bytes.add(asciiBytes.sublist(0, byteCount - 1));
+      bytes.addByte(0);
     } else {
-      final list = Uint8List.fromList(asciiBytes);
-      list.addAll(Uint8List(byteCount - asciiBytes.length - 1));
-      list.add(0); // Make the last item is '\0'
-      return list;
+      bytes.add(asciiBytes);
+      bytes.add(Uint8List(byteCount - asciiBytes.length - 1));
+      bytes.addByte(0); // Make the last item is '\0'
     }
+
+    return bytes.toBytes();
   }
 }
 
@@ -81,7 +82,10 @@ class ConfigNumPacket implements ConfigPacket {
   late String key;
   late int param;
 
-  ConfigNumPacket({required this.opCode, required this.key, required this.param});
+  ConfigNumPacket({required this.opCode, required this.key, required this.param}) {
+    param = param.abs();
+  }
+
   ConfigNumPacket.fromBytes(List<int> bytes) {
     if (bytes.length < 21) {
       throw InvalidPacketLengthException('Length too short: ${bytes.length}');
