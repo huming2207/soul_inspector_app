@@ -43,6 +43,7 @@ dependencies:
   get_storage: ^2.0.3
   permission_handler: ^10.0.0
   fluttertoast: ^8.0.9
+  convert: ^3.0.2
 
 dev_dependencies:
   flutter_test:
