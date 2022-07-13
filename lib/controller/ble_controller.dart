@@ -5,6 +5,7 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:soul_inspector_app/common/characteristic_uuids.dart';
+import 'package:soul_inspector_app/views/main_page.dart';
 
 import '../model/dev_info_packet.dart';
 import '../protocol/ble_handler.dart';
@@ -52,6 +53,7 @@ class BleController extends GetxController {
         selectedDeviceName.value = device.name;
 
         Fluttertoast.showToast(msg: 'Connected to ${hex.encode(devInfo.value.macAddr)}; FW ${devInfo.value.devFirmwareVer}');
+        Get.to(() => MainPage());
       }
     }, onError: (dynamic error) {
       Fluttertoast.showToast(msg: 'Error on Bluetooth connection: $error', toastLength: Toast.LENGTH_LONG);
